@@ -212,7 +212,7 @@ void *smalloc(size_t mem_size){
                 ** We split this free block into two
                 */
                 size_t new_offset = page_block->offset + page_block->size;
-                PageBlock new_page_block = create_page_block(size + 2 * HDR, new_offset);
+                PageBlock new_page_block = create_page_block(size + HDR, new_offset);
                 push(&page_list, &new_page_block);
 
                 size_t new_available_size = free_block->size - new_offset;
@@ -406,15 +406,6 @@ int main(){
     printf("ptr2: %p\n", ptr2);
     printf("ptr3: %p\n", ptr3);
     printf("ptr4: %p\n", ptr4);
-
-    // for(int i = 0; i <= 100; i++){
-    //     size_t rand_size = (size_t)(arc4random_uniform(PAGE_SIZE - 1) + 1);
-    //     // printf("%d: Allocating %zu bytes\n",i, rand_size);
-    //     void *ptr = smalloc(rand_size);
-    //     sfree(ptr);
-    // }
-
-    // print_vec_fb(&free_list);
 
     return 0;
 }
