@@ -28,6 +28,7 @@ endif
 # Debug flags with sanitizers for catching segfaults early
 CFLAGS_DEBUG = $(CFLAGS_COMMON) -g -O1 \
                $(SANITIZE_FLAGS) \
+               -fno-omit-frame-pointer \
                -fstack-protector-strong \
                -D_FORTIFY_SOURCE=2
 
