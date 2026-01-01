@@ -150,7 +150,6 @@ AllocHeader *get_free_block(size_t index){
     size_t free_block_index = *(size_t *)get(&free_list, index);
     void **free_block_ptr = (void **)get(&block_list, free_block_index);
     AllocHeader *free_block = (AllocHeader *)*free_block_ptr;
-    printf("free_block: %p\n", (char *)free_block);
     assert(free_block->is_free);
     return free_block;
 }
@@ -203,8 +202,7 @@ void *smalloc(size_t mem_size){
                     push(&block_list, &new_free_ptr);
                     size_t new_free_block_index = block_list.len - 1;
                     push(&free_list, &new_free_block_index);
-                    // Add new block
-                    // push(&block_list, &rawptr);
+
 
                     ALLOCATED = 1;
                     break;
@@ -258,6 +256,7 @@ void *smalloc(size_t mem_size){
 
     // Check if end is within page
     if(ALLOCATED){
+
       return ptr;
     } else {
        fprintf(stderr, "Error: Out of memory\n");
@@ -344,27 +343,78 @@ void visualize_heap(Vector *free_list) {
     printf("HEAP [# = used, . = free]\n");
     printf("|%s|\n", bar);
 }
+
+void print_free_list(void) {
+    printf("FREE LIST (len=%zu)\n", free_list.len);
+    printf("--------------------------------------------------\n");
+
+    for (size_t i = 0; i < free_list.len; i++) {
+        size_t block_index = *(size_t *)get(&free_list, i);
+        void **slot = (void **)get(&block_list, block_index);
+        AllocHeader *h = (AllocHeader *)*slot;
+
+        printf("[%zu] blk_idx=%zu | hdr=%p | page=%zu | off=%zu | size=%zu\n",
+               i,
+               block_index,
+               (void *)h,
+               h->page_index,
+               h->offset,
+               h->size);
+    }
+
+    printf("\n");
+}
+
+void print_block_list(void) {
+    printf("BLOCK LIST (len=%zu)\n", block_list.len);
+    printf("--------------------------------------------------\n");
+
+    for (size_t i = 0; i < block_list.len; i++) {
+        void **slot = (void **)get(&block_list, i);
+        AllocHeader *h = (AllocHeader *)*slot;
+
+        printf("[%zu] hdr=%p | page=%zu | off=%zu | size=%zu | %s | magic=0x%x\n",
+               i,
+               (void *)h,
+               h->page_index,
+               h->offset,
+               h->size,
+               h->is_free ? "FREE " : "USED ",
+               h->magic);
+    }
+
+    printf("\n");
+}
 int main(){
     init();
     printf("PAGE SIZE: %zu\n", PAGE_SIZE);
 
     void* ptr1 = smalloc(2 * PAGE_SIZE);
+    print_block_list();
+    print_free_list();
     void* ptr2 = smalloc(PAGE_SIZE/2);
+    print_block_list();
+    print_free_list();
     void* ptr3 = smalloc(PAGE_SIZE+1);
+    print_block_list();
+    print_free_list();
     void* ptr4 = smalloc(2 * PAGE_SIZE + 5);
+    print_block_list();
+    print_free_list();
 
-    print_vec_fb(&free_list);
     printf("ptr1: %p\n", ptr1);
     printf("ptr2: %p\n", ptr2);
     printf("ptr3: %p\n", ptr3);
     printf("ptr4: %p\n", ptr4);
 
-    for(int i = 0; i <= 100; i++){
-        size_t rand_size = (size_t)(arc4random_uniform(PAGE_SIZE - 1) + 1);
-        printf("%d: Allocating %zu bytes\n",i, rand_size);
-        smalloc(rand_size);
-        // smalloc(rand);
-    }
+    // for(int i = 0; i <= 100; i++){
+    //     size_t rand_size = (size_t)(arc4random_uniform(PAGE_SIZE - 1) + 1);
+    //     // printf("%d: Allocating %zu bytes\n",i, rand_size);
+    //     void *ptr = smalloc(rand_size);
+    //     sfree(ptr);
+    // }
+
+    // print_vec_fb(&free_list);
 
     return 0;
 }

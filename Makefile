@@ -26,11 +26,8 @@ else
 endif
 
 # Debug flags with sanitizers for catching segfaults early
-CFLAGS_DEBUG = $(CFLAGS_COMMON) -g -O1 \
-               $(SANITIZE_FLAGS) \
-               -fno-omit-frame-pointer \
-               -fstack-protector-strong \
-               -D_FORTIFY_SOURCE=2
+CFLAGS_DEBUG = $(CFLAGS_COMMON) -g -O0 \
+               -fno-omit-frame-pointer
 
 # Production/Release flags
 CFLAGS_RELEASE = $(CFLAGS_COMMON) -O2 \
