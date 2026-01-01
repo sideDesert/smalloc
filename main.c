@@ -265,9 +265,35 @@ void *smalloc(size_t mem_size){
     }
 }
 
-void free(void *ptr){
-   // this is going to be a pain in the ass
-   // Alright let's free some shit
+size_t find_block_index(void *target_ptr){
+   for(size_t i = 0; i < block_list.len; i++) {
+       void **block_ptr = (void **)get(&block_list, i);
+       AllocHeader *header = (AllocHeader *)*block_ptr;
+
+       // Check if this block's user data pointer matches
+       void *block_user_ptr = (char *)header + HDR;
+       if(block_user_ptr == target_ptr)
+           return i;
+   }
+   fprintf(stderr, "Error: Pointer not found in block list\n");
+   abort();
+}
+
+void sfree(void *ptr){
+   if(ptr == NULL) return;
+   AllocHeader *header_ptr = (AllocHeader *)((char *)ptr - HDR);
+   if(header_ptr->magic != MAGIC){
+       fprintf(stderr, "Error: Invalid memory or corrupted header\n");
+       abort();
+   }
+   if(header_ptr->is_free) {
+       fprintf(stderr, "Error: Double free detected\n");
+       abort();
+   }
+
+   header_ptr->is_free = 1;
+   size_t index = find_block_index(ptr);
+   push(&free_list, &index);
 }
 
 
