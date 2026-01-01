@@ -5,7 +5,7 @@ CC = clang
 TARGET = build
 
 # Source files (add your .c files here)
-SRCS = main.c
+SRCS = main.c smalloc.c vector.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -14,7 +14,7 @@ OBJS = $(SRCS:.c=.o)
 UNAME_S := $(shell uname -s)
 
 # Common flags
-CFLAGS_COMMON = -Wall -Wextra -std=c17
+CFLAGS_COMMON = -Wall -Wextra -Wshadow -std=c17
 
 # Platform-specific sanitizer flags
 ifeq ($(UNAME_S),Darwin)

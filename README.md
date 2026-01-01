@@ -25,3 +25,6 @@ Memory is laid out like so in a page. We need to align the memory otherwise we g
 We use a really simple implementation of a dynamic array (which internally uses mmap) to keep track of the pages. Not the most efficient, but it works.
 
 This implementation is not thread-safe. It obviously should not be used in production code, unless you are feeling a little bit insane. This throws a random memory sanitation error - which I am not sure why happens. So like YAY!!
+This implementation also is a fragmentation monster. It is not optimized for fragmentation and WILL lead to memory fragmentation issues. (I just felt a little bit lazy writing that part)
+
+This is just an exercise in learning C and understanding memory management ok? Don't expect a production grade project. I don't know even know how I am supposed to link projects.
